@@ -134,7 +134,9 @@ class AppTheme {
         ),
         appBarTheme: AppBarTheme(
           color: UIColors.backgroundColorDark,
-          iconTheme: const IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(
+            color: UIColors.primaryColorDark,
+          ),
           titleTextStyle: GoogleFonts.poppins(
             textStyle: const TextStyle(
               color: Colors.white,

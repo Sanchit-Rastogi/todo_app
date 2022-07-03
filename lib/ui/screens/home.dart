@@ -1,5 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:slide_countdown/slide_countdown.dart';
+import 'package:todo_assign/core/viewmodels/home_model.dart';
+import 'package:todo_assign/locator.dart';
+import 'package:todo_assign/ui/routes/router.gr.dart';
 import 'package:todo_assign/ui/shared/colors.dart';
 import 'package:todo_assign/ui/shared/ui_helper.dart';
 
@@ -11,22 +16,35 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var model = locator<HomeModel>();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          topBar(),
-          pendingTasks(),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(
-          Icons.add,
-          color: UIColors.backgroundColorLight,
-        ),
+    return ChangeNotifierProvider<HomeModel>(
+      create: (context) => model,
+      child: Consumer<HomeModel>(
+        builder: (context, model, child) {
+          return Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  topBar(),
+                  pendingTasks(),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                AutoRouter.of(context).push(const AddScreenRoute());
+              },
+              child: const Icon(
+                Icons.add,
+                color: UIColors.backgroundColorLight,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -51,10 +69,12 @@ class _HomeScreenState extends State<HomeScreen> {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(0),
             shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: model.gridCount,
+              mainAxisExtent: 160,
             ),
             children: [
+              todoCard(),
               todoCard(),
               todoCard(),
               todoCard(),
@@ -68,7 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget todoCard() {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: 5,
+      ),
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -77,21 +100,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Todo title',
-            style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: UIColors.primaryColorDark,
-                ),
-          ),
-          UIHelper.verticalSpaceSmall,
-          Text(
-            'Some description about the todo and some short text.',
-            style: Theme.of(context).textTheme.bodyText1,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Todo title',
+                style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: UIColors.primaryColorDark,
+                    ),
+              ),
+              UIHelper.verticalSpaceSmall,
+              Text(
+                'Some description about the todo and some short text.',
+                style: Theme.of(context).textTheme.bodyText1,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
           UIHelper.verticalSpaceMedium,
           Row(
@@ -165,10 +194,16 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             margin: const EdgeInsets.only(right: 20),
             child: GestureDetector(
-              onTap: () {},
-              child: const Icon(
-                Icons.grid_view_rounded,
-              ),
+              onTap: () {
+                model.alterGridCount();
+              },
+              child: model.gridCount == 1
+                  ? const Icon(
+                      Icons.grid_view_rounded,
+                    )
+                  : const Icon(
+                      Icons.list_rounded,
+                    ),
             ),
           ),
         ],
