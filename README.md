@@ -1,16 +1,7 @@
-# todo_assign
+# Flutter TODO App.
 
-A new Flutter project.
+A TODO app to manage all your day to day small tasks.
 
-## Getting Started
+## Demo
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![demo](https://user-images.githubusercontent.com/34184127/177156443-7f8eee6b-aba8-4a22-9a09-af734a08c89f.gif)
