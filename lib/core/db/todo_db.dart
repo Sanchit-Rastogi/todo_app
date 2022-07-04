@@ -33,8 +33,67 @@ class TodoDatabase {
     ${TodoFields.duration} $textType,
     ${TodoFields.details} $textType,
     ${TodoFields.date} $textType,
-    ${TodoFields.status} $textType,
+    ${TodoFields.status} $textType
     )
     ''');
+  }
+
+  Future<TodoModel> create(TodoModel todo) async {
+    final db = await instance.database;
+
+    final id = await db.insert(todoTable, todo.toJson());
+    return todo.copy(id: id);
+  }
+
+  Future<TodoModel> readTodo(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      todoTable,
+      columns: TodoFields.values,
+      where: '${TodoFields.id} = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return TodoModel.fromJson(maps.first);
+    } else {
+      throw Exception('ID $id not found');
+    }
+  }
+
+  Future<List<TodoModel>> readAllTodo() async {
+    final db = await instance.database;
+
+    const orderBy = '${TodoFields.date} ASC';
+    final result = await db.query(todoTable, orderBy: orderBy);
+
+    return result.map((e) => TodoModel.fromJson(e)).toList();
+  }
+
+  Future<int> update(TodoModel todo) async {
+    final db = await instance.database;
+
+    return db.update(
+      todoTable,
+      todo.toJson(),
+      where: '${TodoFields.id} = ?',
+      whereArgs: [todo.id],
+    );
+  }
+
+  Future<int> delete(int id) async {
+    final db = await instance.database;
+
+    return db.delete(
+      todoTable,
+      where: '${TodoFields.id} = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future close() async {
+    final db = await instance.database;
+    db.close();
   }
 }

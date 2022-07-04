@@ -21,7 +21,7 @@ class TodoFields {
 class TodoModel {
   int? id;
   String title;
-  int duration;
+  String duration;
   String details;
   DateTime date;
   String status;
@@ -38,7 +38,7 @@ class TodoModel {
   TodoModel copy({
     int? id,
     String? title,
-    int? duration,
+    String? duration,
     String? details,
     DateTime? date,
     String? status,
@@ -55,7 +55,7 @@ class TodoModel {
   static TodoModel fromJson(Map<String, Object?> json) => TodoModel(
         id: json[TodoFields.id] as int?,
         details: json[TodoFields.details] as String,
-        duration: json[TodoFields.duration] as int,
+        duration: json[TodoFields.duration] as String,
         title: json[TodoFields.title] as String,
         date: DateTime.parse(json[TodoFields.date] as String),
         status: json[TodoFields.status] as String,
