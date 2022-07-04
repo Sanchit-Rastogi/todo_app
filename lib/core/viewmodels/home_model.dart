@@ -10,7 +10,6 @@ class HomeModel extends ChangeNotifier {
   var todoProvider = locator<TodoProvider>();
 
   void updateDurationLeft(int duration, int todoId) {
-    //todo Same error coming while running more than 1 todo.
     for (var element in todos) {
       if (element.id == todoId) {
         element.duration = duration.toString();
