@@ -38,10 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   topBar(),
-                  pendingTasks(),
+                  createdTasks(),
                 ],
               ),
             ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: FloatingActionButton(
               onPressed: () {
                 AutoRouter.of(context).push(const AddScreenRoute());
@@ -57,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget pendingTasks() {
+  Widget createdTasks() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -92,10 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget todoCard(TodoModel todo) {
-    var duration = Duration(
-      minutes: int.parse(todo.duration) ~/ 60,
-      seconds: int.parse(todo.duration) % 60,
-    );
     return Container(
       margin: const EdgeInsets.symmetric(
         vertical: 10,
@@ -164,9 +162,103 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              InkWell(
+              playPauseBtn(todo),
+              durationTimer(todo),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget durationTimer(TodoModel todo) {
+    var duration = Duration(
+      minutes: int.parse(todo.duration) ~/ 60,
+      seconds: int.parse(todo.duration) % 60,
+    );
+    return todo.status == TodoStatus.inprogress.value
+        ? SlideCountdownSeparated(
+            duration: duration,
+            separatorPadding: const EdgeInsets.all(1),
+            decoration: BoxDecoration(
+              color: UIColors.primaryColorDark,
+              borderRadius: BorderRadius.circular(7),
+            ),
+            onDone: () {
+              todo.status = TodoStatus.done.value;
+              model.updateTodo(todo);
+            },
+            onChanged: (value) {
+              model.updateDurationLeft(value.inSeconds, todo.id!);
+            },
+          )
+        : todo.status == TodoStatus.todo.value
+            ? Row(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: UIColors.primaryColorDark,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      (int.parse(todo.duration) ~/ 60).toString(),
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: UIColors.backgroundColorLight,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                  UIHelper.horizontalSpaceSmall,
+                  Container(
+                    alignment: Alignment.center,
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: UIColors.primaryColorDark,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      (int.parse(todo.duration) % 60).toString(),
+                      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            color: UIColors.backgroundColorLight,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+                ],
+              )
+            : Container();
+  }
+
+  Widget playPauseBtn(TodoModel todo) {
+    return todo.status == TodoStatus.inprogress.value
+        ? InkWell(
+            onTap: () {
+              todo.status = TodoStatus.todo.value;
+              model.updateTodoDurationInDB();
+              model.updateTodo(todo);
+            },
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: UIColors.primaryColorDark,
+              ),
+              child: const Icon(
+                Icons.pause_rounded,
+                color: UIColors.backgroundColorLight,
+              ),
+            ),
+          )
+        : todo.status == TodoStatus.todo.value
+            ? InkWell(
                 onTap: () {
                   todo.status = TodoStatus.inprogress.value;
+                  model.updateTodoDurationInDB();
                   model.updateTodo(todo);
                 },
                 child: Container(
@@ -186,20 +278,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: UIColors.backgroundColorLight,
                         ),
                 ),
-              ),
-              //Text(todo.status),
-              SlideCountdownSeparated(
-                duration: duration,
-                decoration: BoxDecoration(
-                  color: UIColors.primaryColorDark,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+              )
+            : const SizedBox(
+                width: 30,
+                height: 30,
+              );
   }
 
   Widget topBar() {

@@ -9,6 +9,23 @@ class HomeModel extends ChangeNotifier {
   List<TodoModel> todos = [];
   var todoProvider = locator<TodoProvider>();
 
+  void updateDurationLeft(int duration, int todoId) {
+    //todo Same error coming while running more than 1 todo.
+    for (var element in todos) {
+      if (element.id == todoId) {
+        element.duration = duration.toString();
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void updateTodoDurationInDB() async {
+    for (var element in todos) {
+      await todoProvider.updateTodo(element);
+    }
+  }
+
   void getAllTodos() async {
     todos = await todoProvider.loadTodo();
     notifyListeners();

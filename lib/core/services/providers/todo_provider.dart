@@ -33,7 +33,6 @@ class TodoProvider {
     try {
       return await TodoDatabase.instance.readAllTodo();
     } catch (e) {
-      print(e);
       return [];
     }
   }
