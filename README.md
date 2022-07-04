@@ -4,4 +4,4 @@ A TODO app to manage all your day to day small tasks.
 
 ## Demo
 
-![demo](https://user-images.githubusercontent.com/34184127/177156443-7f8eee6b-aba8-4a22-9a09-af734a08c89f.gif)
+![demo (1)](https://user-images.githubusercontent.com/34184127/177157182-35a9a101-8953-4e71-880c-ba2beb2387dc.gif)
